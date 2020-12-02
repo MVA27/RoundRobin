@@ -14,9 +14,8 @@ struct node *start = NULL;
 int n;
 int currentTime = 0;
 int startTime = 0;
-int beforeSubtractionBurstTime = 0;
-int remainingBurstTime = 0;
 int totalBurstTime;
+
 
 int numberOfProcessesWithBurstTimeZero = 0;
 
@@ -25,9 +24,6 @@ void createNode(){
     struct node *p = (struct node *)malloc(sizeof(struct node));
     printf("\nEnter Process Number : ");
     scanf("%d",&p->Process);
-
-    //printf("\nEnter Arrival Time : ");
-    //scanf("%d",&p->ArrivalTime);
 
     printf("\nEnter Burst Time : ");
     scanf("%d",&p->BurstTime);
@@ -62,10 +58,10 @@ void main()
         createNode();
     }
 
-    printf("\n ENTER THE TIME QUANTUM : ");
+    printf("\nENTER THE TIME QUANTUM : ");
     scanf("%d",&timeQuantum);
 
-    printf("\n TOTAL PROCESSES IN THE SYSTEM : ");
+    printf("\nTOTAL PROCESSES IN THE SYSTEM : ");
     mainTemp = start;
     while(mainTemp != NULL){
         printf(" %d ",mainTemp->Process);
@@ -73,13 +69,10 @@ void main()
         mainTemp = mainTemp->next;
     }
 
-    printf("\ntotalBurstTime = %d",totalBurstTime);
-
-    printf("\n");
-
-
     mainTemp = start;
     struct node *quantumPointer = start;
+
+    printf("\nNOTE: Output Format is:- TIME <PROCESS NO> TIME <PROCESS NO> ... \n");
 
     printf(" %d ",startTime);
     while(1)
@@ -87,46 +80,39 @@ void main()
         quantumPointer = start;
         while(quantumPointer != NULL)
         {
-            //Print the processes one by one
+            //Print the processes one by one in the order they were taken.
             if(quantumPointer->BurstTime != 0)
             {
                 printf(" < %d > ",quantumPointer->Process);
-
             }
 
 
             //Reduce the burst time by time quantum
-
             if(quantumPointer->BurstTime != 0)
             {
-                //save the Burst Time in a variable
-                //Then Subtract it by time quantum
-
-                //If its < Time Quantum then current time is Full Burst Time of that Process
+                //If BURST TIME is < Time Quantum then current time is Full Burst Time of that Process (It has been fully executed)
                 if(quantumPointer->BurstTime < timeQuantum)
                 {
                     currentTime = currentTime + quantumPointer->BurstTime;
                     printf(" %d ",currentTime);
                 }
 
+				//If BURST TIME is > TIME QUANTUM then obviously the process executed only for time=timeQuantum and then preempted
                 if(quantumPointer->BurstTime > timeQuantum)
                 {
-                    //Else its just Time Quantum
                     currentTime = currentTime + timeQuantum;
                     printf(" %d ",currentTime);
                 }
 
+				//Handle equal to case
                 if(quantumPointer->BurstTime == timeQuantum)
                 {
                     currentTime = currentTime + timeQuantum;
                     printf(" %d ",currentTime);
                 }
 
-
                 quantumPointer->BurstTime = quantumPointer->BurstTime - timeQuantum;
-
             }
-
 
             //If burst time goes to negative, make it zero
             if(quantumPointer->BurstTime <= 0)
@@ -142,11 +128,8 @@ void main()
 
         if(numberOfProcessesWithBurstTimeZero == n || currentTime == totalBurstTime)
         {
-            printf("\nBREAKING LOOP coz count = %d",numberOfProcessesWithBurstTimeZero);
             break;
         }
 
     }
-
-    printf("\ncurrentTime =  %d ",currentTime);
 }
