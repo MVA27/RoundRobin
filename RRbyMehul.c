@@ -80,31 +80,25 @@ void main()
         quantumPointer = start;
         while(quantumPointer != NULL)
         {
-            //Print the processes one by one in the order they were taken.
             if(quantumPointer->BurstTime != 0)
             {
                 printf(" < %d > ",quantumPointer->Process);
             }
 
-
-            //Reduce the burst time by time quantum
             if(quantumPointer->BurstTime != 0)
             {
-                //If BURST TIME is < Time Quantum then current time is Full Burst Time of that Process (It has been fully executed)
                 if(quantumPointer->BurstTime < timeQuantum)
                 {
                     currentTime = currentTime + quantumPointer->BurstTime;
                     printf(" %d ",currentTime);
                 }
 
-				//If BURST TIME is > TIME QUANTUM then obviously the process executed only for time=timeQuantum and then preempted
                 if(quantumPointer->BurstTime > timeQuantum)
                 {
                     currentTime = currentTime + timeQuantum;
                     printf(" %d ",currentTime);
                 }
 
-				//Handle equal to case
                 if(quantumPointer->BurstTime == timeQuantum)
                 {
                     currentTime = currentTime + timeQuantum;
@@ -114,7 +108,6 @@ void main()
                 quantumPointer->BurstTime = quantumPointer->BurstTime - timeQuantum;
             }
 
-            //If burst time goes to negative, make it zero
             if(quantumPointer->BurstTime <= 0)
             {
                 quantumPointer->BurstTime = 0;
