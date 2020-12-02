@@ -7,9 +7,14 @@ int ArrivalTime;
 int BurstTime;
 int TurnAroundTime;
 int WaitingTime;
+int CompletionTime;
 struct node *next;
 };
 struct node *start = NULL;
+
+//Implemented in later version as I realized i was manuplating BurstTime of orignal List which created problem in claculating Waiting Time
+int arrayIndex = 0;
+int individaulBurstTimeHolder[100];
 
 int n;
 int currentTime = 0;
@@ -27,7 +32,12 @@ void createNode(){
 
     printf("\nEnter Burst Time : ");
     scanf("%d",&p->BurstTime);
+	
+	//Save the Orignal BurstTime in an array
+	individaulBurstTimeHolder[arrayIndex] = p->BurstTime;
+	arrayIndex++;
 
+	p->CompletionTime = 0;
     p->ArrivalTime = 0;
     p->TurnAroundTime = 0;
     p->WaitingTime = 0;
@@ -69,6 +79,9 @@ void main()
         mainTemp = mainTemp->next;
     }
 
+
+
+	
     mainTemp = start;
     struct node *quantumPointer = start;
 
@@ -115,12 +128,14 @@ void main()
             }
 
             //If burst time goes to negative, make it zero
-            if(quantumPointer->BurstTime <= 0)
+			/*If process has BURST TIME zero that means the process wont we executing again. Hence set its execution time = currentTime 
+			and next time dont allow that process to enter this if-statement again. as it will set the CompletionTime again and again */
+            if(quantumPointer->BurstTime <= 0 && quantumPointer->CompletionTime == 0)
             {
                 quantumPointer->BurstTime = 0;
                 numberOfProcessesWithBurstTimeZero++;
+				quantumPointer->CompletionTime = currentTime;
             }
-
             quantumPointer = quantumPointer->next;
         }
 
@@ -132,4 +147,28 @@ void main()
         }
 
     }
+	
+	printf("\n");
+    printf("\nDETAILS OF EACH PROCESS : ");
+    int totalTurnAroundTime = 0;
+    int totalWaitingTime = 0;
+    struct node *m = start;
+	int index = 0;
+    while(m != NULL)
+    {
+		//Calculate TURN AROUND TIME and WAITING TIME for each process before printing
+		m->TurnAroundTime = m->CompletionTime - m->ArrivalTime;
+		m->WaitingTime = m->TurnAroundTime - individaulBurstTimeHolder[index];
+
+        printf("\n Process No = %d : Arrival Time = %d : Burst Time = %d : Turn Around Time = %d : Waiting Time = %d : Completion Time = %d ",m->Process,m->ArrivalTime,m->BurstTime,m->TurnAroundTime,m->WaitingTime,m->CompletionTime);
+
+		totalTurnAroundTime = totalTurnAroundTime + m->TurnAroundTime;
+        totalWaitingTime = totalWaitingTime + m->WaitingTime;
+		
+        m = m->next;
+		index++;
+    }
+
+    printf("\n average waiting time = %f ",(float)totalWaitingTime/n);
+    printf("\n average turn around time = %f ",(float)totalTurnAroundTime/n);
 }
